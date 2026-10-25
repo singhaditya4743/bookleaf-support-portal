@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { cn } from '@/lib/cn';
 import { formatDateTime } from '@/lib/format';
 
@@ -8,7 +9,12 @@ interface MessageBubbleProps {
   fromTeam: boolean;
 }
 
-export function MessageBubble({ author, body, createdAt, fromTeam }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({
+  author,
+  body,
+  createdAt,
+  fromTeam,
+}: MessageBubbleProps) {
   return (
     <div className={cn('flex gap-3', !fromTeam && 'flex-row-reverse')}>
       <span
@@ -34,4 +40,4 @@ export function MessageBubble({ author, body, createdAt, fromTeam }: MessageBubb
       </div>
     </div>
   );
-}
+});

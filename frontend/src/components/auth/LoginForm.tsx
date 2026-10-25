@@ -1,37 +1,18 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
 import { PasswordInput } from '@/components/auth/PasswordInput';
+import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/ui/FormField';
 import { Input } from '@/components/ui/inputs';
-import { hasErrors, validateLogin } from '@/lib/validation';
-import { FieldErrors } from '@/types/ui.types';
-import { LoginCredentials } from '@/types/user.types';
+import { useLoginForm } from '@/hooks/auth/use-login-form';
 
 export function LoginForm() {
-  const router = useRouter();
-  const [values, setValues] = useState<LoginCredentials>({ email: '', password: '' });
-  const [errors, setErrors] = useState<FieldErrors<LoginCredentials>>({});
-  const [submitting, setSubmitting] = useState(false);
-
-  const update = (field: keyof LoginCredentials, value: string) => {
-    setValues((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined }));
-  };
-
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const nextErrors = validateLogin(values);
-    setErrors(nextErrors);
-    if (hasErrors(nextErrors)) return;
-    setSubmitting(true);
-    router.push('/author/books');
-  };
+  const { values, errors, serverError, submitting, update, submit } = useLoginForm();
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    <form onSubmit={submit} noValidate className="space-y-5">
+      {serverError && <Alert message={serverError} />}
       <FormField id="email" label="Email" error={errors.email}>
         <Input
           id="email"

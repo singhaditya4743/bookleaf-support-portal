@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { useCurrentMinute } from '@/hooks/use-current-minute';
+import { useCurrentMinute } from '@/hooks/common/use-current-minute';
 import { formatDate, formatDateTime, formatRelative } from '@/lib/format';
 
 export function RelativeTime({ value }: { value: string }) {

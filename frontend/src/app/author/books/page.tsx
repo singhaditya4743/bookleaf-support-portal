@@ -8,23 +8,38 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { LinkButton } from '@/components/ui/Button';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { useAuthorBooks } from '@/hooks/use-author-books';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { PageSkeleton } from '@/components/ui/PageSkeleton';
+import { useAuthorBooks } from '@/hooks/author/use-author-books';
 
 export default function MyBooksPage() {
-  const { books, stats } = useAuthorBooks();
+  const { books, stats, error, loading, reload } = useAuthorBooks();
+
+  const header = (
+    <PageHeader
+      title="My Books"
+      description="Sales and royalty details for every book you have published with BookLeaf."
+      action={
+        <LinkButton href="/author/new-query">
+          <MessageSquarePlus className="size-4" aria-hidden />
+          New query
+        </LinkButton>
+      }
+    />
+  );
+
+  if (loading) return <PageSkeleton />;
+  if (error && !books.length)
+    return (
+      <>
+        {header}
+        <ErrorState message={error.message} onRetry={reload} />
+      </>
+    );
 
   return (
     <>
-      <PageHeader
-        title="My Books"
-        description="Sales and royalty details for every book you have published with BookLeaf."
-        action={
-          <LinkButton href="/author/new-query">
-            <MessageSquarePlus className="size-4" aria-hidden />
-            New query
-          </LinkButton>
-        }
-      />
+      {header}
       <BookStats stats={stats} />
       <Card className="mt-6 overflow-hidden">
         <CardHeader title="All books" description="Click a book to see its full details." />

@@ -1,5 +1,7 @@
+'use client';
+
 import { LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { logout } from '@/services/auth.service';
 import { UserProfile } from '@/types/user.types';
 
 interface UserCardProps {
@@ -22,13 +24,15 @@ export function UserCard({ user }: UserCardProps) {
         <p className="truncate text-sm font-medium text-slate-900">{user.name}</p>
         <p className="truncate text-xs text-slate-500">{user.email}</p>
       </div>
-      <Link
-        href="/login"
+      <button
+        type="button"
+        onClick={logout}
         aria-label="Log out"
+        title="Log out"
         className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
       >
         <LogOut className="size-4" />
-      </Link>
+      </button>
     </div>
   );
 }

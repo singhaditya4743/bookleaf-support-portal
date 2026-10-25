@@ -6,30 +6,29 @@ import { BookRoyalty } from '@/components/author/BookRoyalty';
 import { BookTickets } from '@/components/author/BookTickets';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { LinkButton } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { useAuthorBook } from '@/hooks/use-author-books';
-import { useAuthorTickets } from '@/hooks/use-author-tickets';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { NotFoundState } from '@/components/ui/NotFoundState';
+import { PageSkeleton } from '@/components/ui/PageSkeleton';
+import { useAuthorBook } from '@/hooks/author/use-author-books';
+import { useAuthorTickets } from '@/hooks/author/use-author-tickets';
 
 const BACK = { href: '/author/books', label: 'My Books' };
 
 export function BookDetailView({ bookId }: { bookId: string }) {
-  const book = useAuthorBook(bookId);
-  const tickets = useAuthorTickets(bookId);
+  const { book, error, loading, reload } = useAuthorBook(bookId);
+  const { tickets } = useAuthorTickets(bookId);
+
+  if (loading) return <PageSkeleton />;
+  if (error && !book) return <ErrorState message={error.message} onRetry={reload} />;
 
   if (!book) {
     return (
-      <>
-        <PageHeader title="Book not found" back={BACK} />
-        <Card>
-          <EmptyState
-            icon={BookX}
-            title="We couldn't find this book"
-            description="It may have been removed, or it belongs to another account."
-            action={<LinkButton href="/author/books">Back to My Books</LinkButton>}
-          />
-        </Card>
-      </>
+      <NotFoundState
+        icon={BookX}
+        title="Book not found"
+        description="It may have been removed, or it belongs to another account."
+        back={BACK}
+      />
     );
   }
 

@@ -1,11 +1,12 @@
 import { BookOpen, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import { memo } from 'react';
 import { TicketStatusBadge } from '@/components/author/TicketStatusBadge';
 import { RelativeTime } from '@/components/ui/RelativeTime';
 import { CATEGORY_LABELS } from '@/lib/labels';
 import { AuthorTicketSummary } from '@/types/ticket.types';
 
-export function TicketRow({ ticket }: { ticket: AuthorTicketSummary }) {
+export const TicketRow = memo(function TicketRow({ ticket }: { ticket: AuthorTicketSummary }) {
   return (
     <li>
       <Link
@@ -35,4 +36,4 @@ export function TicketRow({ ticket }: { ticket: AuthorTicketSummary }) {
       </Link>
     </li>
   );
-}
+});
