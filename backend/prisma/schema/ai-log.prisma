@@ -1,0 +1,19 @@
+model AiLog {
+  id           String      @id @default(uuid())
+  ticketId     String?     @map("ticket_id")
+  provider     AiProvider
+  operation    AiOperation
+  model        String?
+  inputTokens  Int         @default(0) @map("input_tokens")
+  outputTokens Int         @default(0) @map("output_tokens")
+  latencyMs    Int         @default(0) @map("latency_ms")
+  success      Boolean
+  error        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  ticket Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+
+  @@index([ticketId])
+  @@index([createdAt])
+  @@map("ai_logs")
+}

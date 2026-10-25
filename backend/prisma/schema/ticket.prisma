@@ -1,0 +1,57 @@
+model Ticket {
+  id             String         @id @default(uuid())
+  authorId       String         @map("author_id")
+  bookId         String?        @map("book_id")
+  assignedToId   String?        @map("assigned_to_id")
+  subject        String
+  description    String
+  attachmentName String?        @map("attachment_name")
+  status         TicketStatus   @default(OPEN)
+  category       TicketCategory @default(GENERAL_INQUIRY)
+  priority       TicketPriority @default(MEDIUM)
+  classifiedBy   AiProvider?    @map("classified_by")
+  aiDraft        String?        @map("ai_draft")
+  aiDraftAt      DateTime?      @map("ai_draft_at")
+  resolvedAt     DateTime?      @map("resolved_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  author     User            @relation("TicketAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  book       Book?           @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  assignedTo User?           @relation("TicketAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  messages   TicketMessage[]
+  notes      InternalNote[]
+  aiLogs     AiLog[]
+
+  @@index([authorId])
+  @@index([status, priority, createdAt])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  ticketId  String   @map("ticket_id")
+  senderId  String   @map("sender_id")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+  @@map("ticket_messages")
+}
+
+model InternalNote {
+  id        String   @id @default(uuid())
+  ticketId  String   @map("ticket_id")
+  adminId   String   @map("admin_id")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  admin  User   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+  @@map("internal_notes")
+}

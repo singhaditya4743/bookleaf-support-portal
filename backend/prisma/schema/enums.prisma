@@ -1,0 +1,38 @@
+enum Role {
+  AUTHOR
+  ADMIN
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketCategory {
+  ROYALTY_PAYMENTS
+  ISBN_METADATA
+  PRINTING_QUALITY
+  DISTRIBUTION_AVAILABILITY
+  BOOK_STATUS_PRODUCTION
+  GENERAL_INQUIRY
+}
+
+enum TicketPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum AiProvider {
+  GEMINI
+  GROQ
+  KEYWORD_FALLBACK
+}
+
+enum AiOperation {
+  CLASSIFY
+  DRAFT
+}

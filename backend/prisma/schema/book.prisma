@@ -1,0 +1,26 @@
+model Book {
+  id              String    @id @default(uuid())
+  bookCode        String    @unique @map("book_code")
+  authorId        String    @map("author_id")
+  title           String
+  isbn            String?   @unique
+  genre           String?
+  publicationDate DateTime? @map("publication_date")
+  status          String
+  mrp             Decimal?  @db.Decimal(10, 2)
+  royaltyPerCopy  Decimal?  @map("royalty_per_copy") @db.Decimal(10, 2)
+  copiesSold      Int       @default(0) @map("copies_sold")
+  royaltyEarned   Decimal   @default(0) @map("royalty_earned") @db.Decimal(12, 2)
+  royaltyPaid     Decimal   @default(0) @map("royalty_paid") @db.Decimal(12, 2)
+  lastPayoutAt    DateTime? @map("last_payout_at")
+  printPartner    String?   @map("print_partner")
+  availableOn     String[]  @default([]) @map("available_on")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@index([authorId])
+  @@map("books")
+}
