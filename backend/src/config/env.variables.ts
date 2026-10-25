@@ -32,4 +32,14 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   GROQ_API_KEY?: string;
+
+  @IsString()
+  GEMINI_MODEL: string = 'gemini-3.5-flash-lite';
+
+  @IsString()
+  GROQ_MODEL: string = 'qwen/qwen3.8-27b';
+
+  @IsInt()
+  @Min(1000)
+  AI_TIMEOUT_MS: number = 12000;
 }

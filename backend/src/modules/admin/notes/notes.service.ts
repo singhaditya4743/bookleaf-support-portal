@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CreateNoteDto } from '@/modules/admin/notes/dto/create-note.dto';
 import { AdminTicketsService } from '@/modules/admin/tickets/admin-tickets.service';
+import { SocketService } from '@/modules/socket/socket.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { InternalNoteView } from '@/types/note.types';
 
@@ -23,19 +24,22 @@ export class NotesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ticketsService: AdminTicketsService,
+    private readonly socket: SocketService,
   ) {}
 
   async create(ticketId: string, adminId: string, dto: CreateNoteDto): Promise<InternalNoteView> {
-    await this.ticketsService.getStatus(ticketId);
-    const note = await this.prisma.internalNote.create({
+    await this.ticketsService.getTicketRef(ticketId);
+    const row = await this.prisma.internalNote.create({
       data: { ticketId, adminId, body: dto.body },
       select: NOTE_SELECT,
     });
-    return toNoteView(note);
+    const note = toNoteView(row);
+    this.socket.noteAdded({ ticketId, note });
+    return note;
   }
 
   async findAll(ticketId: string): Promise<InternalNoteView[]> {
-    await this.ticketsService.getStatus(ticketId);
+    await this.ticketsService.getTicketRef(ticketId);
     const notes = await this.prisma.internalNote.findMany({
       where: { ticketId },
       orderBy: { createdAt: 'asc' },

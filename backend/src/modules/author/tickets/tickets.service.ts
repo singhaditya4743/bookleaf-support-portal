@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { TicketTriageService } from '@/modules/ai/ticket-triage.service';
+import { SocketService } from '@/modules/socket/socket.service';
 import { CreateTicketDto } from '@/modules/author/tickets/dto/create-ticket.dto';
 import {
   TICKET_DETAIL_SELECT,
@@ -11,7 +13,11 @@ import { AuthorTicketDetail, AuthorTicketSummary } from '@/types/ticket.types';
 
 @Injectable()
 export class TicketsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly triage: TicketTriageService,
+    private readonly socket: SocketService,
+  ) {}
 
   async create(authorId: string, dto: CreateTicketDto): Promise<AuthorTicketDetail> {
     if (dto.bookId) {
@@ -22,6 +28,12 @@ export class TicketsService {
       data: { ...dto, authorId },
       select: TICKET_DETAIL_SELECT,
     });
+    this.socket.ticketCreated({
+      ticketId: ticket.id,
+      subject: ticket.subject,
+      createdAt: ticket.createdAt,
+    });
+    this.triage.triageInBackground(ticket.id);
     return toTicketDetail(ticket);
   }
 

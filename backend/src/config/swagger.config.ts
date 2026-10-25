@@ -17,6 +17,7 @@ export function setupSwagger(app: INestApplication): void {
     .addTag('Author - Books', 'Books and royalty details of the logged-in author')
     .addTag('Author - Tickets', 'Support queries raised by the logged-in author')
     .addTag('Admin - Tickets', 'Ticket queue and ticket management for the BookLeaf team')
+    .addTag('Admin - AI', 'AI-drafted replies based on the BookLeaf knowledge base')
     .addTag('Admin - Replies', 'Replies sent to the author')
     .addTag('Admin - Notes', 'Internal notes, visible only to admins')
     .build();

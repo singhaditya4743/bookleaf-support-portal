@@ -8,6 +8,11 @@ export enum TicketSort {
   Oldest = 'oldest',
 }
 
+export interface TicketRef {
+  status: TicketStatus;
+  authorId: string;
+}
+
 export interface TicketAuthorRef {
   id: string;
   name: string;

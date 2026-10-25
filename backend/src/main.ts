@@ -4,14 +4,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
 import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
 import { EnvironmentVariables } from '@/config/env.variables';
+import { SocketIoAdapter } from '@/config/socket-io.adapter';
 import { setupSwagger } from '@/config/swagger.config';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService<EnvironmentVariables, true>);
 
+  const frontendUrl = config.get('FRONTEND_URL', { infer: true });
+
   app.setGlobalPrefix('api');
-  app.enableCors({ origin: config.get('FRONTEND_URL', { infer: true }) });
+  app.enableCors({ origin: frontendUrl });
+  app.useWebSocketAdapter(new SocketIoAdapter(app, frontendUrl));
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
   );

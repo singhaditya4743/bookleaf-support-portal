@@ -5,14 +5,19 @@ import {
   toAdminTicketDetail,
 } from '@/modules/admin/tickets/admin-tickets.mapper';
 import { UpdateTicketDto } from '@/modules/admin/tickets/dto/update-ticket.dto';
+import { SocketService } from '@/modules/socket/socket.service';
+import { TICKET_UPDATE_SELECT, toTicketUpdate } from '@/modules/socket/ticket-update.mapper';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AdminTicketDetail } from '@/types/admin-ticket.types';
+import { AdminTicketDetail, TicketRef } from '@/types/admin-ticket.types';
 
 const CLOSED_STATUSES: TicketStatus[] = [TicketStatus.RESOLVED, TicketStatus.CLOSED];
 
 @Injectable()
 export class AdminTicketsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly socket: SocketService,
+  ) {}
 
   async findOne(ticketId: string): Promise<AdminTicketDetail> {
     const ticket = await this.prisma.ticket.findUnique({
@@ -30,29 +35,34 @@ export class AdminTicketsService {
       throw new BadRequestException('Provide at least one field to update');
     }
 
-    const current = await this.getStatus(ticketId);
+    const current = await this.getTicketRef(ticketId);
     if (dto.assignedToId) {
       await this.assertIsAdmin(dto.assignedToId);
     }
 
     const data: Prisma.TicketUncheckedUpdateInput = { ...dto };
-    if (dto.status && dto.status !== current) {
+    if (dto.status && dto.status !== current.status) {
       data.resolvedAt = CLOSED_STATUSES.includes(dto.status) ? new Date() : null;
     }
 
-    await this.prisma.ticket.update({ where: { id: ticketId }, data });
+    const updated = await this.prisma.ticket.update({
+      where: { id: ticketId },
+      data,
+      select: TICKET_UPDATE_SELECT,
+    });
+    this.socket.ticketUpdated(updated.authorId, toTicketUpdate(updated));
     return this.findOne(ticketId);
   }
 
-  async getStatus(ticketId: string): Promise<TicketStatus> {
+  async getTicketRef(ticketId: string): Promise<TicketRef> {
     const ticket = await this.prisma.ticket.findUnique({
       where: { id: ticketId },
-      select: { status: true },
+      select: { status: true, authorId: true },
     });
     if (!ticket) {
       throw new NotFoundException('Ticket not found');
     }
-    return ticket.status;
+    return ticket;
   }
 
   private async assertIsAdmin(userId: string): Promise<void> {

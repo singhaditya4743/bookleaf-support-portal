@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AiDraftController } from '@/modules/admin/ai-draft/ai-draft.controller';
 import { NotesController } from '@/modules/admin/notes/notes.controller';
 import { NotesService } from '@/modules/admin/notes/notes.service';
 import { RepliesController } from '@/modules/admin/replies/replies.controller';
@@ -8,7 +9,7 @@ import { AdminTicketsController } from '@/modules/admin/tickets/admin-tickets.co
 import { AdminTicketsService } from '@/modules/admin/tickets/admin-tickets.service';
 
 @Module({
-  controllers: [AdminTicketsController, RepliesController, NotesController],
+  controllers: [AdminTicketsController, AiDraftController, RepliesController, NotesController],
   providers: [AdminTicketsService, AdminTicketsQueryService, RepliesService, NotesService],
 })
 export class AdminModule {}
