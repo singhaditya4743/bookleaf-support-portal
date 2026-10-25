@@ -34,6 +34,7 @@ export class BooksService {
       royaltyPaid,
       royaltyPending: royaltyEarned - royaltyPaid,
       lastPayoutAt: book.lastPayoutAt,
+      printPartner: book.printPartner,
       availableOn: book.availableOn,
     };
   }

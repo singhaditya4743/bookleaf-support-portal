@@ -44,6 +44,9 @@ export class AuthorBookDto implements AuthorBook {
   @ApiProperty({ type: Date, nullable: true })
   lastPayoutAt: Date | null;
 
+  @ApiProperty({ type: String, nullable: true, example: 'Repro India' })
+  printPartner: string | null;
+
   @ApiProperty({ type: [String], example: ['Amazon India', 'BookLeaf Store'] })
   availableOn: string[];
 }

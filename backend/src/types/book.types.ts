@@ -13,5 +13,6 @@ export interface AuthorBook {
   royaltyPaid: number;
   royaltyPending: number;
   lastPayoutAt: Date | null;
+  printPartner: string | null;
   availableOn: string[];
 }
