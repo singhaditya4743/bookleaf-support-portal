@@ -5,3 +5,10 @@ export interface ApiErrorResponse {
   path: string;
   timestamp: string;
 }
+
+export interface Paginated<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
