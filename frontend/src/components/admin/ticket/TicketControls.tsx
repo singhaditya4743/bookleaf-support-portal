@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { FormField } from '@/components/ui/FormField';
 import { Select } from '@/components/ui/inputs';
+import { SuccessNote } from '@/components/ui/SuccessNote';
 import { useAdminTicketContext } from '@/hooks/admin/use-admin-ticket-context';
+import { useFlashMessage } from '@/hooks/common/use-flash-message';
 import { useSession } from '@/hooks/common/use-session';
 import {
   CATEGORY_LABELS,
@@ -15,7 +17,11 @@ import {
   STATUS_LABELS,
   toOptions,
 } from '@/lib/labels';
-import { AdminTicketDetail } from '@/types/admin-ticket.types';
+import { AdminTicketDetail, UpdateTicketInput } from '@/types/admin-ticket.types';
+
+type Status = AdminTicketDetail['status'];
+type Category = AdminTicketDetail['category'];
+type Priority = AdminTicketDetail['priority'];
 
 const STATUS_OPTIONS = toOptions(STATUS_LABELS);
 const CATEGORY_OPTIONS = toOptions(CATEGORY_LABELS);
@@ -27,20 +33,26 @@ export function TicketControls() {
   const busy = actions.pending === 'update' || actions.pending === 'assign';
   const error = actions.error?.action === 'update' || actions.error?.action === 'assign';
   const mine = ticket.assignedTo?.id === userId;
+  const [saved, flash] = useFlashMessage();
+
+  const change = async (input: UpdateTicketInput, label: string, value?: string) => {
+    if (await actions.update(input)) flash(`${label} changed to ${value}`);
+  };
 
   return (
     <Card>
       <CardHeader title="Manage ticket" />
       <div className="space-y-4 px-5 py-5">
         {error && actions.error && <Alert message={actions.error.message} />}
+        <SuccessNote message={saved} />
         <FormField id="status" label="Status">
           <Select
             id="status"
             options={STATUS_OPTIONS}
             value={ticket.status}
             disabled={busy}
-            onChange={(event) =>
-              actions.update({ status: event.target.value as AdminTicketDetail['status'] })
+            onChange={({ target }) =>
+              change({ status: target.value as Status }, 'Status', target.selectedOptions[0]?.text)
             }
           />
         </FormField>
@@ -50,8 +62,12 @@ export function TicketControls() {
             options={CATEGORY_OPTIONS}
             value={ticket.category}
             disabled={busy}
-            onChange={(event) =>
-              actions.update({ category: event.target.value as AdminTicketDetail['category'] })
+            onChange={({ target }) =>
+              change(
+                { category: target.value as Category },
+                'Category',
+                target.selectedOptions[0]?.text,
+              )
             }
           />
         </FormField>
@@ -61,8 +77,12 @@ export function TicketControls() {
             options={PRIORITY_OPTIONS}
             value={ticket.priority}
             disabled={busy}
-            onChange={(event) =>
-              actions.update({ priority: event.target.value as AdminTicketDetail['priority'] })
+            onChange={({ target }) =>
+              change(
+                { priority: target.value as Priority },
+                'Priority',
+                target.selectedOptions[0]?.text,
+              )
             }
           />
         </FormField>
