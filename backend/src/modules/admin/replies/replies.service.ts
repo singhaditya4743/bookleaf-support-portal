@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { TicketStatus } from '@prisma/client';
 import { TICKET_MESSAGE_SELECT, toMessageView } from '@/common/mappers/ticket-message.mapper';
 import { CreateReplyDto } from '@/common/dto/create-reply.dto';
@@ -18,6 +18,9 @@ export class RepliesService {
 
   async create(ticketId: string, adminId: string, dto: CreateReplyDto): Promise<TicketMessageView> {
     const { status, authorId, assignedToId } = await this.ticketsService.getTicketRef(ticketId);
+    if (status === TicketStatus.CLOSED) {
+      throw new BadRequestException('This ticket is closed. Reopen it to reply.');
+    }
     const nextStatus = status === TicketStatus.OPEN ? TicketStatus.IN_PROGRESS : status;
 
     const [row, ticket] = await this.prisma.$transaction([
