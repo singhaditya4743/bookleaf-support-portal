@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { TicketStatus } from '@prisma/client';
 import { CreateReplyDto } from '@/common/dto/create-reply.dto';
 import { TICKET_MESSAGE_SELECT, toMessageView } from '@/common/mappers/ticket-message.mapper';
@@ -6,8 +6,6 @@ import { SocketService } from '@/modules/socket/socket.service';
 import { TICKET_UPDATE_SELECT, toTicketUpdate } from '@/modules/socket/ticket-update.mapper';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TicketMessageView } from '@/types/ticket.types';
-
-const CLOSED_STATUSES: TicketStatus[] = [TicketStatus.RESOLVED, TicketStatus.CLOSED];
 
 @Injectable()
 export class TicketRepliesService {
@@ -29,7 +27,11 @@ export class TicketRepliesService {
       throw new NotFoundException('Ticket not found');
     }
 
-    const reopen = CLOSED_STATUSES.includes(ticket.status);
+    if (ticket.status === TicketStatus.CLOSED) {
+      throw new BadRequestException('This ticket is closed. Please raise a new query.');
+    }
+
+    const reopen = ticket.status === TicketStatus.RESOLVED;
     const [row, updated] = await this.prisma.$transaction([
       this.prisma.ticketMessage.create({
         data: { ticketId, senderId: authorId, body: dto.body },
