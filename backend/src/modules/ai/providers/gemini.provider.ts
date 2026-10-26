@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiProvider } from '@prisma/client';
 import { EnvironmentVariables } from '@/config/env.variables';
+import { toProviderError } from '@/modules/ai/providers/provider-http.error';
 import { GeminiResponse, LlmProvider, LlmRequest, LlmResult } from '@/types/ai.types';
 
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -37,7 +38,7 @@ export class GeminiProvider implements LlmProvider {
     });
 
     if (!response.ok) {
-      throw new Error(`Gemini ${response.status}: ${(await response.text()).slice(0, 200)}`);
+      throw await toProviderError('Gemini', response);
     }
 
     const data = (await response.json()) as GeminiResponse;

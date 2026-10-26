@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from '@/app.module';
 import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
 import { EnvironmentVariables } from '@/config/env.variables';
@@ -8,7 +9,8 @@ import { SocketIoAdapter } from '@/config/socket-io.adapter';
 import { setupSwagger } from '@/config/swagger.config';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.set('trust proxy', 1);
   const config = app.get(ConfigService<EnvironmentVariables, true>);
 
   const frontendUrl = config.get('FRONTEND_URL', { infer: true });

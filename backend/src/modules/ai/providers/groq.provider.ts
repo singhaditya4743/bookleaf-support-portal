@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiProvider } from '@prisma/client';
 import { EnvironmentVariables } from '@/config/env.variables';
+import { toProviderError } from '@/modules/ai/providers/provider-http.error';
 import { GroqResponse, LlmProvider, LlmRequest, LlmResult } from '@/types/ai.types';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -38,7 +39,7 @@ export class GroqProvider implements LlmProvider {
     });
 
     if (!response.ok) {
-      throw new Error(`Groq ${response.status}: ${(await response.text()).slice(0, 200)}`);
+      throw await toProviderError('Groq', response);
     }
 
     const data = (await response.json()) as GroqResponse;
