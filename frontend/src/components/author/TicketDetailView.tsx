@@ -5,6 +5,7 @@ import { AuthorReplyBox } from '@/components/author/AuthorReplyBox';
 import { TicketMeta } from '@/components/author/TicketMeta';
 import { TicketThread } from '@/components/author/TicketThread';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { TicketStatusBadge } from '@/components/tickets/TicketStatusBadge';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { NotFoundState } from '@/components/ui/NotFoundState';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
@@ -35,7 +36,11 @@ export function TicketDetailView({ ticketId }: { ticketId: string }) {
 
   return (
     <>
-      <PageHeader title={ticket.subject} back={BACK} />
+      <PageHeader
+        title={ticket.subject}
+        back={BACK}
+        action={<TicketStatusBadge status={ticket.status} />}
+      />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <TicketThread ticket={ticket} />
