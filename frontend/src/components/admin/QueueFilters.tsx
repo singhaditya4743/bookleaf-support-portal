@@ -2,15 +2,11 @@
 
 import { X } from 'lucide-react';
 import { memo } from 'react';
+import { QueueFilterFields } from '@/components/admin/QueueFilterFields';
 import { Button } from '@/components/ui/Button';
 import { DebouncedSearchInput } from '@/components/ui/DebouncedSearchInput';
-import { Input, Select } from '@/components/ui/inputs';
-import {
-  CATEGORY_FILTER_OPTIONS,
-  PRIORITY_FILTER_OPTIONS,
-  SORT_OPTIONS,
-  STATUS_FILTER_OPTIONS,
-} from '@/lib/filter-options';
+import { Select } from '@/components/ui/inputs';
+import { SORT_OPTIONS } from '@/lib/filter-options';
 import { TicketFilters, TicketSort } from '@/types/admin-ticket.types';
 
 interface QueueFiltersProps {
@@ -44,46 +40,7 @@ export const QueueFilters = memo(function QueueFilters({
           onChange={(event) => onChange({ sort: event.target.value as TicketSort })}
         />
       </div>
-      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <Select
-          aria-label="Filter by status"
-          options={STATUS_FILTER_OPTIONS}
-          value={filters.status}
-          onChange={(event) => onChange({ status: event.target.value as TicketFilters['status'] })}
-        />
-        <Select
-          aria-label="Filter by category"
-          options={CATEGORY_FILTER_OPTIONS}
-          value={filters.category}
-          onChange={(event) =>
-            onChange({ category: event.target.value as TicketFilters['category'] })
-          }
-        />
-        <Select
-          aria-label="Filter by priority"
-          options={PRIORITY_FILTER_OPTIONS}
-          value={filters.priority}
-          onChange={(event) =>
-            onChange({ priority: event.target.value as TicketFilters['priority'] })
-          }
-        />
-        <Input
-          type="date"
-          aria-label="Created from"
-          title="Created from"
-          value={filters.from}
-          max={filters.to || undefined}
-          onChange={(event) => onChange({ from: event.target.value })}
-        />
-        <Input
-          type="date"
-          aria-label="Created to"
-          title="Created to"
-          value={filters.to}
-          min={filters.from || undefined}
-          onChange={(event) => onChange({ to: event.target.value })}
-        />
-      </div>
+      <QueueFilterFields filters={filters} onChange={onChange} />
       {isFiltered && (
         <Button variant="ghost" size="sm" onClick={onReset}>
           <X className="size-4" aria-hidden />

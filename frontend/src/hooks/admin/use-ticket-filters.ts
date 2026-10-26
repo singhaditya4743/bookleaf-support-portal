@@ -1,8 +1,9 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { CATEGORY_LABELS, PRIORITY_LABELS, SORT_LABELS, STATUS_LABELS } from '@/lib/labels';
+import { saveQueueQuery } from '@/lib/queue-query';
 import { toQueryString } from '@/lib/query-string';
 import { TicketFilters } from '@/types/admin-ticket.types';
 
@@ -13,6 +14,11 @@ export function useTicketFilters() {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const query = params.toString();
+    saveQueueQuery(query ? `?${query}` : '');
+  }, [params]);
 
   const filters = useMemo<TicketFilters>(
     () => ({

@@ -8,7 +8,6 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'BookLeaf Support Portal',
   description: 'Author support and communication portal for BookLeaf Publishing',
 };
 

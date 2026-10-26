@@ -1,9 +1,11 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useApiQuery } from '@/hooks/common/use-api-query';
 import { useSocketEvent } from '@/hooks/common/use-socket-event';
+import { appendMessage } from '@/lib/ticket-updates';
 import { AUTHOR_API } from '@/services/author.service';
-import { AuthorTicketDetail, TicketStatus } from '@/types/ticket.types';
+import { AuthorTicketDetail, TicketMessage, TicketStatus } from '@/types/ticket.types';
 
 const CLOSED_STATUSES: TicketStatus[] = ['RESOLVED', 'CLOSED'];
 
@@ -12,13 +14,14 @@ export function useAuthorTicket(ticketId: string) {
     AUTHOR_API.ticket(ticketId),
   );
 
+  const addMessage = useCallback(
+    (message: TicketMessage) =>
+      setData((ticket) => ({ ...appendMessage(ticket, message), updatedAt: message.createdAt })),
+    [setData],
+  );
+
   useSocketEvent('ticket:reply', ({ ticketId: id, message }) => {
-    if (id !== ticketId) return;
-    setData((ticket) =>
-      ticket.messages.some((item) => item.id === message.id)
-        ? ticket
-        : { ...ticket, updatedAt: message.createdAt, messages: [...ticket.messages, message] },
-    );
+    if (id === ticketId) addMessage(message);
   });
 
   useSocketEvent('ticket:updated', ({ ticketId: id, status, category, updatedAt }) => {
@@ -32,5 +35,5 @@ export function useAuthorTicket(ticketId: string) {
     }));
   });
 
-  return { ticket: data, error, loading: loading && !data, reload };
+  return { ticket: data, error, loading: loading && !data, reload, addMessage };
 }

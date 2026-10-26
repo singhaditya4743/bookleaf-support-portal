@@ -1,6 +1,7 @@
 'use client';
 
-import { FormEvent, useCallback, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useUnsavedWarning } from '@/hooks/common/use-unsaved-warning';
 import { getErrorMessage } from '@/lib/api/api-error';
 import { hasErrors, validateTicket } from '@/lib/validation';
 import { createTicket } from '@/services/author.service';
@@ -56,6 +57,13 @@ export function useQueryForm(initialBookId: string) {
     setServerError(null);
     setCreatedId(null);
   }, [initialBookId]);
+
+  useEffect(() => {
+    if (!createdId) return;
+    return reset;
+  }, [createdId, reset]);
+
+  useUnsavedWarning(!createdId && Boolean(values.subject.trim() || values.description.trim()));
 
   return { values, errors, serverError, submitting, createdId, update, submit, reset };
 }

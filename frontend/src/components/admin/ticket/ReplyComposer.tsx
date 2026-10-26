@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Textarea } from '@/components/ui/inputs';
 import { useAdminTicketContext } from '@/hooks/admin/use-admin-ticket-context';
-import { REPLY_LIMITS, useReplyComposer } from '@/hooks/admin/use-reply-composer';
+import { useReplyComposer } from '@/hooks/admin/use-reply-composer';
+import { REPLY_LIMITS } from '@/lib/validation';
 
 export function ReplyComposer() {
   const { ticket, actions } = useAdminTicketContext();

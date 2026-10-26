@@ -1,7 +1,7 @@
 'use client';
 
 import { TicketX } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PriorityBadge } from '@/components/admin/PriorityBadge';
 import { AdminThread } from '@/components/admin/ticket/AdminThread';
 import { InternalNotes } from '@/components/admin/ticket/InternalNotes';
@@ -17,13 +17,16 @@ import { AdminTicketContext } from '@/context/admin-ticket.context';
 import { useAdminTicket } from '@/hooks/admin/use-admin-ticket';
 import { useTicketActions } from '@/hooks/admin/use-ticket-actions';
 import { isNotFound } from '@/lib/api/api-error';
-
-const BACK = { href: '/admin/tickets', label: 'Ticket Queue' };
+import { readQueueQuery } from '@/lib/queue-query';
 
 export function AdminTicketView({ ticketId }: { ticketId: string }) {
   const { data: ticket, error, loading, reload, setData } = useAdminTicket(ticketId);
   const actions = useTicketActions(ticketId, setData);
   const value = useMemo(() => (ticket ? { ticket, actions } : null), [ticket, actions]);
+  const [back] = useState(() => ({
+    href: `/admin/tickets${readQueueQuery()}`,
+    label: 'Ticket Queue',
+  }));
 
   if (loading) return <PageSkeleton />;
 
@@ -33,7 +36,7 @@ export function AdminTicketView({ ticketId }: { ticketId: string }) {
         icon={TicketX}
         title="Ticket not found"
         description="This ticket does not exist or was removed."
-        back={BACK}
+        back={back}
       />
     );
   }
@@ -47,7 +50,7 @@ export function AdminTicketView({ ticketId }: { ticketId: string }) {
       <PageHeader
         title={value.ticket.subject}
         description={`Raised by ${value.ticket.author.name}`}
-        back={BACK}
+        back={back}
         action={
           <div className="flex gap-2">
             <PriorityBadge priority={value.ticket.priority} />

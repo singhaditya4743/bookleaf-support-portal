@@ -17,7 +17,10 @@ export function applyTicketUpdate<T extends AdminTicketSummary | AdminTicketDeta
   };
 }
 
-export const appendMessage = (ticket: AdminTicketDetail, message: TicketMessage) =>
+export const appendMessage = <T extends { messages: TicketMessage[] }>(
+  ticket: T,
+  message: TicketMessage,
+): T =>
   ticket.messages.some((item) => item.id === message.id)
     ? ticket
     : { ...ticket, messages: [...ticket.messages, message] };

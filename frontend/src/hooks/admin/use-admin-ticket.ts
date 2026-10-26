@@ -11,7 +11,11 @@ export function useAdminTicket(ticketId: string) {
   const { setData, reload } = query;
 
   useSocketEvent('ticket:reply', ({ ticketId: id, message }) => {
-    if (id === ticketId) setData((ticket) => appendMessage(ticket, message));
+    if (id !== ticketId) return;
+    setData((ticket) => {
+      const next = appendMessage(ticket, message);
+      return message.senderRole === 'AUTHOR' ? { ...next, aiDraft: null, aiDraftAt: null } : next;
+    });
   });
 
   useSocketEvent('ticket:note', ({ ticketId: id, note }) => {

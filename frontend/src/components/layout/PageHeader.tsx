@@ -1,6 +1,9 @@
+'use client';
+
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { usePageTitle } from '@/hooks/common/use-page-title';
 
 interface PageHeaderProps {
   title: string;
@@ -10,6 +13,8 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, description, action, back }: PageHeaderProps) {
+  usePageTitle(title);
+
   return (
     <header className="mb-6">
       {back && (

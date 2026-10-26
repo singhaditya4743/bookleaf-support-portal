@@ -1,7 +1,10 @@
 import { CheckCircle2 } from 'lucide-react';
+import type { Metadata } from 'next';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { LoginIllustration } from '@/components/auth/LoginIllustration';
 import { Logo } from '@/components/layout/Logo';
+
+export const metadata: Metadata = { title: 'Sign in · BookLeaf Support' };
 
 const HIGHLIGHTS = [
   'Track royalties for every book in one place',

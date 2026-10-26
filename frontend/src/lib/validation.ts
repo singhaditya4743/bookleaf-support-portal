@@ -16,6 +16,7 @@ export function validateLogin({
 
 export const SUBJECT_LIMITS = { min: 5, max: 150 };
 export const DESCRIPTION_LIMITS = { min: 20, max: 5000 };
+export const REPLY_LIMITS = { min: 2, max: 5000 };
 
 export function validateTicket({
   subject,

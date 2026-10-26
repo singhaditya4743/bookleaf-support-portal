@@ -2,8 +2,9 @@
 
 import { FormEvent, useCallback, useState } from 'react';
 import { useAdminTicketContext } from '@/hooks/admin/use-admin-ticket-context';
-
-export const REPLY_LIMITS = { min: 2, max: 5000 };
+import { useAutoDraft } from '@/hooks/admin/use-auto-draft';
+import { useUnsavedWarning } from '@/hooks/common/use-unsaved-warning';
+import { REPLY_LIMITS } from '@/lib/validation';
 
 export function useReplyComposer() {
   const { ticket, actions } = useAdminTicketContext();
@@ -11,6 +12,9 @@ export function useReplyComposer() {
   const [draftAt, setDraftAt] = useState(ticket.aiDraftAt);
   const [edited, setEdited] = useState(false);
   const [sent, setSent] = useState(false);
+
+  useAutoDraft();
+  useUnsavedWarning(edited && text.trim().length > 0);
 
   if (ticket.aiDraftAt !== draftAt) {
     setDraftAt(ticket.aiDraftAt);
@@ -36,7 +40,7 @@ export function useReplyComposer() {
     if (body.length < REPLY_LIMITS.min) return;
     if (await reply(body)) {
       setText('');
-      setEdited(true);
+      setEdited(false);
       setSent(true);
     }
   };
