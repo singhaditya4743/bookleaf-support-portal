@@ -1,4 +1,4 @@
-import { BookOpen, MessageSquarePlus, Ticket } from 'lucide-react';
+import { BookOpen, Inbox, MessageSquarePlus, Ticket } from 'lucide-react';
 import { NavItem, Panel } from '@/types/ui.types';
 
 export const NAV_ITEMS: Record<Panel, NavItem[]> = {
@@ -7,5 +7,5 @@ export const NAV_ITEMS: Record<Panel, NavItem[]> = {
     { label: 'New Query', href: '/author/new-query', icon: MessageSquarePlus },
     { label: 'My Tickets', href: '/author/tickets', icon: Ticket },
   ],
-  admin: [],
+  admin: [{ label: 'Ticket Queue', href: '/admin/tickets', icon: Inbox }],
 };

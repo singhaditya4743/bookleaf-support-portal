@@ -1,6 +1,6 @@
 import { Paperclip } from 'lucide-react';
 import Link from 'next/link';
-import { TicketStatusBadge } from '@/components/author/TicketStatusBadge';
+import { TicketStatusBadge } from '@/components/tickets/TicketStatusBadge';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { formatDateTime } from '@/lib/format';
 import { CATEGORY_LABELS } from '@/lib/labels';

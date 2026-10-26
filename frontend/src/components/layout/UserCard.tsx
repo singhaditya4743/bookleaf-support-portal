@@ -1,6 +1,7 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
+import { getInitials } from '@/lib/initials';
 import { logout } from '@/services/auth.service';
 import { UserProfile } from '@/types/user.types';
 
@@ -9,11 +10,7 @@ interface UserCardProps {
 }
 
 export function UserCard({ user }: UserCardProps) {
-  const initials = user.name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2);
+  const initials = getInitials(user.name);
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">

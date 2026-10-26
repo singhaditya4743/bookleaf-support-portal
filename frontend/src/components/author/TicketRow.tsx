@@ -1,7 +1,7 @@
 import { BookOpen, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
-import { TicketStatusBadge } from '@/components/author/TicketStatusBadge';
+import { TicketStatusBadge } from '@/components/tickets/TicketStatusBadge';
 import { RelativeTime } from '@/components/ui/RelativeTime';
 import { CATEGORY_LABELS } from '@/lib/labels';
 import { AuthorTicketSummary } from '@/types/ticket.types';

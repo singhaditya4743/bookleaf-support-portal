@@ -1,5 +1,5 @@
 import { Clock } from 'lucide-react';
-import { MessageBubble } from '@/components/author/MessageBubble';
+import { MessageBubble } from '@/components/tickets/MessageBubble';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { AuthorTicketDetail } from '@/types/ticket.types';
 
@@ -10,19 +10,26 @@ export function TicketThread({ ticket }: { ticket: AuthorTicketDetail }) {
       <div className="space-y-6 bg-slate-50/60 px-5 py-6">
         <MessageBubble
           author="You"
+          avatar="You"
           body={ticket.description}
           createdAt={ticket.createdAt}
           fromTeam={false}
+          mine
         />
-        {ticket.messages.map((message) => (
-          <MessageBubble
-            key={message.id}
-            author={message.senderRole === 'ADMIN' ? message.senderName : 'You'}
-            body={message.body}
-            createdAt={message.createdAt}
-            fromTeam={message.senderRole === 'ADMIN'}
-          />
-        ))}
+        {ticket.messages.map((message) => {
+          const fromTeam = message.senderRole === 'ADMIN';
+          return (
+            <MessageBubble
+              key={message.id}
+              author={fromTeam ? message.senderName : 'You'}
+              avatar={fromTeam ? 'BL' : 'You'}
+              body={message.body}
+              createdAt={message.createdAt}
+              fromTeam={fromTeam}
+              mine={!fromTeam}
+            />
+          );
+        })}
         {ticket.messages.length === 0 && (
           <p className="flex items-center justify-center gap-2 text-sm text-slate-500">
             <Clock className="size-4" aria-hidden />
