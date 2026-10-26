@@ -4,6 +4,7 @@ Authors raise support queries about their books. The BookLeaf team answers them 
 
 **Live demo:** https://bookleaf-support-portal-tan.vercel.app (author and admin portals, log in with any account below)
 **API docs (Swagger):** https://bookleaf-support-portal-9z4x.onrender.com/api/docs
+**Latest code:** `production` branch (the default branch, deployed to the live demo)
 
 ## Test logins
 
