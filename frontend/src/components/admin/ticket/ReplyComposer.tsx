@@ -1,10 +1,11 @@
 'use client';
 
-import { CheckCircle2, Send, Sparkles } from 'lucide-react';
+import { CheckCircle2, Lock, Send, Sparkles } from 'lucide-react';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Textarea } from '@/components/ui/inputs';
 import { useAdminTicketContext } from '@/hooks/admin/use-admin-ticket-context';
 import { useReplyComposer } from '@/hooks/admin/use-reply-composer';
@@ -20,6 +21,18 @@ export function ReplyComposer() {
   const placeholder = ticket.aiDraft
     ? 'Write your reply to the author…'
     : 'The AI draft is not ready yet. Generate one, or write the reply yourself.';
+
+  if (ticket.status === 'CLOSED') {
+    return (
+      <Card>
+        <EmptyState
+          icon={Lock}
+          title="This ticket is closed"
+          description="Replies are turned off. Change the status to reopen the ticket if you need to reply."
+        />
+      </Card>
+    );
+  }
 
   return (
     <Card>

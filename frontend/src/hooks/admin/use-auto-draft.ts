@@ -8,7 +8,7 @@ const BACKGROUND_DRAFT_GRACE_MS = 20000;
 export function useAutoDraft(): void {
   const { ticket, actions } = useAdminTicketContext();
   const attempted = useRef(false);
-  const missing = !ticket.aiDraft;
+  const missing = !ticket.aiDraft && ticket.status !== 'CLOSED';
   const { regenerateDraft } = actions;
 
   useEffect(() => {
