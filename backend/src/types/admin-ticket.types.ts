@@ -11,6 +11,7 @@ export enum TicketSort {
 export interface TicketRef {
   status: TicketStatus;
   authorId: string;
+  assignedToId: string | null;
 }
 
 export interface TicketAuthorRef {

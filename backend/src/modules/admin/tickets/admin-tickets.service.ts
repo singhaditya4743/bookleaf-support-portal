@@ -57,7 +57,7 @@ export class AdminTicketsService {
   async getTicketRef(ticketId: string): Promise<TicketRef> {
     const ticket = await this.prisma.ticket.findUnique({
       where: { id: ticketId },
-      select: { status: true, authorId: true },
+      select: { status: true, authorId: true, assignedToId: true },
     });
     if (!ticket) {
       throw new NotFoundException('Ticket not found');

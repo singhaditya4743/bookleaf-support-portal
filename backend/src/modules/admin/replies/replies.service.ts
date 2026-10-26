@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TicketStatus } from '@prisma/client';
 import { TICKET_MESSAGE_SELECT, toMessageView } from '@/common/mappers/ticket-message.mapper';
-import { CreateReplyDto } from '@/modules/admin/replies/dto/create-reply.dto';
+import { CreateReplyDto } from '@/common/dto/create-reply.dto';
 import { AdminTicketsService } from '@/modules/admin/tickets/admin-tickets.service';
 import { SocketService } from '@/modules/socket/socket.service';
 import { TICKET_UPDATE_SELECT, toTicketUpdate } from '@/modules/socket/ticket-update.mapper';
@@ -17,7 +17,7 @@ export class RepliesService {
   ) {}
 
   async create(ticketId: string, adminId: string, dto: CreateReplyDto): Promise<TicketMessageView> {
-    const { status, authorId } = await this.ticketsService.getTicketRef(ticketId);
+    const { status, authorId, assignedToId } = await this.ticketsService.getTicketRef(ticketId);
     const nextStatus = status === TicketStatus.OPEN ? TicketStatus.IN_PROGRESS : status;
 
     const [row, ticket] = await this.prisma.$transaction([
@@ -27,7 +27,7 @@ export class RepliesService {
       }),
       this.prisma.ticket.update({
         where: { id: ticketId },
-        data: { status: nextStatus },
+        data: { status: nextStatus, assignedToId: assignedToId ?? adminId },
         select: TICKET_UPDATE_SELECT,
       }),
     ]);

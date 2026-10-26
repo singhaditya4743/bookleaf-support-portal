@@ -3,7 +3,7 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { Auth } from '@/common/decorators/auth.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { CreateReplyDto } from '@/modules/admin/replies/dto/create-reply.dto';
+import { CreateReplyDto } from '@/common/dto/create-reply.dto';
 import { RepliesService } from '@/modules/admin/replies/replies.service';
 import { TicketMessageDto } from '@/modules/author/tickets/dto/ticket-response.dto';
 import type { AuthUser } from '@/types/user.types';

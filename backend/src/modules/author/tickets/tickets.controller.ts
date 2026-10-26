@@ -3,11 +3,14 @@ import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestj
 import { Role } from '@prisma/client';
 import { Auth } from '@/common/decorators/auth.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { CreateReplyDto } from '@/common/dto/create-reply.dto';
 import { CreateTicketDto } from '@/modules/author/tickets/dto/create-ticket.dto';
 import {
   AuthorTicketDetailDto,
   AuthorTicketSummaryDto,
+  TicketMessageDto,
 } from '@/modules/author/tickets/dto/ticket-response.dto';
+import { TicketRepliesService } from '@/modules/author/tickets/ticket-replies.service';
 import { TicketsService } from '@/modules/author/tickets/tickets.service';
 import type { AuthUser } from '@/types/user.types';
 
@@ -15,7 +18,10 @@ import type { AuthUser } from '@/types/user.types';
 @Auth(Role.AUTHOR)
 @Controller('author/tickets')
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(
+    private readonly ticketsService: TicketsService,
+    private readonly repliesService: TicketRepliesService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Raise a new support query' })
@@ -42,5 +48,16 @@ export class TicketsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AuthorTicketDetailDto> {
     return this.ticketsService.findOne(user.id, id);
+  }
+
+  @Post(':id/replies')
+  @ApiOperation({ summary: 'Reply on your ticket. Reopens a resolved or closed ticket' })
+  @ApiCreatedResponse({ type: TicketMessageDto })
+  reply(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CreateReplyDto,
+  ): Promise<TicketMessageDto> {
+    return this.repliesService.create(user.id, id, dto);
   }
 }

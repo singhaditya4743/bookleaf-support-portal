@@ -1,10 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Book, TicketCategory } from '@prisma/client';
+import { Book, Role, TicketCategory } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { DraftBookFacts, DraftContext } from '@/types/ai-draft.types';
 
+const DATE_FORMAT = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'Asia/Kolkata',
+});
+
 const formatDate = (date: Date | null): string =>
-  date?.toISOString().slice(0, 10) ?? 'not available';
+  date ? DATE_FORMAT.format(date) : 'not available';
 const rupees = (value: { toNumber(): number } | null): string =>
   value ? `Rs ${value.toNumber().toLocaleString('en-IN')}` : 'not set';
 
@@ -35,7 +42,10 @@ export class DraftContextService {
       include: {
         author: { select: { name: true } },
         book: true,
-        messages: { orderBy: { createdAt: 'asc' }, select: { body: true } },
+        messages: {
+          orderBy: { createdAt: 'asc' },
+          select: { body: true, sender: { select: { role: true } } },
+        },
       },
     });
     if (!ticket) {
@@ -45,12 +55,14 @@ export class DraftContextService {
     return {
       category: ticket.category,
       context: {
-        today: new Date().toISOString().slice(0, 10),
+        today: formatDate(new Date()),
         authorName: ticket.author.name,
         subject: ticket.subject,
         description: ticket.description,
         book: ticket.book ? toBookFacts(ticket.book) : null,
-        previousReplies: ticket.messages.map((message) => message.body),
+        previousReplies: ticket.messages.map(
+          ({ body, sender }) => `${sender.role === Role.AUTHOR ? 'Author' : 'BookLeaf'}: ${body}`,
+        ),
       },
     };
   }

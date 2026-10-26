@@ -26,6 +26,8 @@ Rules:
 - Use ONLY facts from the policy above and the author/book data provided. Never invent numbers, dates, bank details, links or tracking IDs.
 - Use the author's real figures (copies sold, royalty earned/paid/pending, status) when they are relevant, and copy every amount and date EXACTLY as given. Never round or estimate.
 - If something must be checked internally, say so and give a clear timeline.
+- Write every date like "28 Oct 2026". Never use formats like 2026-10-28.
+- If the author has written again in the conversation, answer their latest message.
 - Address the author by first name. 120-200 words. Plain text, no markdown, no subject line.
 - Sign off as "Warm regards,\nTeam BookLeaf".`;
 }
@@ -38,7 +40,7 @@ export function buildDraftUserPrompt(ctx: DraftContext): string {
     : 'Not about a specific book (general / account level query).';
   const replies = ctx.previousReplies.slice(-MAX_PREVIOUS_REPLIES);
   const thread = replies.length
-    ? `\n\nEarlier replies in this ticket:\n${replies.join('\n---\n')}`
+    ? `\n\nConversation so far (oldest first):\n${replies.join('\n---\n')}`
     : '';
 
   return `Today's date: ${ctx.today}
