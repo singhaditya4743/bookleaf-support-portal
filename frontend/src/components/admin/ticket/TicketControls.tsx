@@ -1,6 +1,7 @@
 'use client';
 
 import { Sparkles, UserRoundCheck } from 'lucide-react';
+import { ChangeEvent } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader } from '@/components/ui/Card';
@@ -17,11 +18,7 @@ import {
   STATUS_LABELS,
   toOptions,
 } from '@/lib/labels';
-import { AdminTicketDetail, UpdateTicketInput } from '@/types/admin-ticket.types';
-
-type Status = AdminTicketDetail['status'];
-type Category = AdminTicketDetail['category'];
-type Priority = AdminTicketDetail['priority'];
+import { UpdateTicketInput } from '@/types/admin-ticket.types';
 
 const STATUS_OPTIONS = toOptions(STATUS_LABELS);
 const CATEGORY_OPTIONS = toOptions(CATEGORY_LABELS);
@@ -35,9 +32,13 @@ export function TicketControls() {
   const mine = ticket.assignedTo?.id === userId;
   const [saved, flash] = useFlashMessage();
 
-  const change = async (input: UpdateTicketInput, label: string, value?: string) => {
-    if (await actions.update(input)) flash(`${label} changed to ${value}`);
-  };
+  const onPick =
+    (field: keyof UpdateTicketInput, label: string) =>
+    async ({ target }: ChangeEvent<HTMLSelectElement>) => {
+      const input = { [field]: target.value } as UpdateTicketInput;
+      if (await actions.update(input))
+        flash(`${label} changed to ${target.selectedOptions[0]?.text}`);
+    };
 
   return (
     <Card>
@@ -51,9 +52,7 @@ export function TicketControls() {
             options={STATUS_OPTIONS}
             value={ticket.status}
             disabled={busy}
-            onChange={({ target }) =>
-              change({ status: target.value as Status }, 'Status', target.selectedOptions[0]?.text)
-            }
+            onChange={onPick('status', 'Status')}
           />
         </FormField>
         <FormField id="category" label="Category">
@@ -62,13 +61,7 @@ export function TicketControls() {
             options={CATEGORY_OPTIONS}
             value={ticket.category}
             disabled={busy}
-            onChange={({ target }) =>
-              change(
-                { category: target.value as Category },
-                'Category',
-                target.selectedOptions[0]?.text,
-              )
-            }
+            onChange={onPick('category', 'Category')}
           />
         </FormField>
         <FormField id="priority" label="Priority">
@@ -77,13 +70,7 @@ export function TicketControls() {
             options={PRIORITY_OPTIONS}
             value={ticket.priority}
             disabled={busy}
-            onChange={({ target }) =>
-              change(
-                { priority: target.value as Priority },
-                'Priority',
-                target.selectedOptions[0]?.text,
-              )
-            }
+            onChange={onPick('priority', 'Priority')}
           />
         </FormField>
         <p className="flex items-center gap-1.5 text-xs text-slate-500">
